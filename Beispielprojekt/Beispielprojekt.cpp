@@ -32,7 +32,7 @@ public:
 		graphics().draw_rect(
 			0, 0, 
 			width(), height(),
-			Gosu::Color::Color(0xFF30BBFF),
+			Gosu::Color::Color(0xFF3000FF),
 			0
 		);
 
