@@ -172,6 +172,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Bitmap.bmp" />
+    <Image Include="Image.png" />
+    <Image Include="Block.png" />
+    <Image Include="Right.png" />
+    <Image Include="Left.png" />
     <Image Include="rakete.png" />
   </ItemGroup>
   <ItemGroup>
