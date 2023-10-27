@@ -26,5 +26,22 @@
     <Image Include="Bitmap.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Image.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Right.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Left.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Block.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Skript.pdf">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
