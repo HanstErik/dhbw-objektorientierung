@@ -6,7 +6,7 @@ class Block
 public:
 	int x = 0, y = 0;
 
-	Gosu::Image image = Gosu::Image::Image("Block.png");
+	Gosu::Image image = Gosu::Image::Image("grasblock.png");
 
 	Block()
 	{
@@ -80,9 +80,9 @@ public:
 
 	// Images for different movements and orientations
 	Gosu::Image r = Gosu::Image::Image("Right.png");
-	Gosu::Image rjump = Gosu::Image::Image("Right.png");
+	Gosu::Image rjump = Gosu::Image::Image("Rightjmp.png");
 	Gosu::Image l = Gosu::Image::Image("Left.png");
-	Gosu::Image ljump = Gosu::Image::Image("Left.png");
+	Gosu::Image ljump = Gosu::Image::Image("Leftjmp.png");
 
 	// Current image
 	Gosu::Image image;
@@ -197,10 +197,10 @@ public:
 					 0,0,0,0,0,0,0,0,0,0,
 					 0,0,0,0,0,0,0,0,0,0,
 				   	 0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,1,0,0,0,
-					 0,0,0,0,0,0,0,0,1,0,
 					 0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,0,1,0,0,
+					 0,0,0,0,0,0,0,0,0,0,
+					 0,0,0,0,0,0,0,0,0,0,
+					 0,0,0,0,0,0,0,0,0,0,
 					 1,1,1,1,1,1,1,1,1,1};
 
 	Level l1 = Level(0, pos);
