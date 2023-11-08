@@ -171,12 +171,14 @@
     <ClCompile Include="Beispielprojekt.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Bitmap.bmp" />
+    <Image Include="grasblock.png" />
     <Image Include="Image.png" />
     <Image Include="Block.png" />
+    <Image Include="Leftjmp.png" />
     <Image Include="Right.png" />
     <Image Include="Left.png" />
     <Image Include="rakete.png" />
+    <Image Include="Rightjmp.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Skript.pdf" />

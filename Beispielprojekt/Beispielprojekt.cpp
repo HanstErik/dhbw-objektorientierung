@@ -1,5 +1,9 @@
 #include <Gosu/Gosu.hpp>
 #include <Gosu/AutoLink.hpp>
+#include <iostream>
+#include <vector>
+
+using namespace std;
 
 class Block
 {
@@ -19,6 +23,7 @@ public:
 		y = py;
 	}
 
+	// Displaying a block
 	void draw()
 	{
 		image.draw(
@@ -31,42 +36,36 @@ public:
 class Level
 {
 public:
-	int stage;
-
 	bool bpos[100];
 
-	Block blocks[100];
+	vector<Block> blocks;
 
 	Level(int pstage, bool pos[100])
-	{
-		stage = pstage;
-
+	{	
+		// Creating the vector "blocks" depending on the 10x10 array
 		for (int i = 0; i < sizeof(bpos) / sizeof(bool); i++)
 		{
 			bpos[i] = pos[i];
-		}
-		
-	}
-	
-	void draw()
-	{
-		for (int i = 0; i < sizeof(bpos) / sizeof(bool); i++)
-		{
+
 			if (bpos[i])
 			{
-				blocks[i].x = i * 32 % 320;
-				blocks[i].y = floor(i / 10) * 32;
+				blocks.push_back(Block());
 
-				blocks[i].draw();
+				blocks.back().x = i * 32 % 320;
+				blocks.back().y = floor(i / 10) * 32;
 			}
 		}
+
 	}
 
-	/*
-	Erstellung von einzelnen Stages, bestehend aus mehreren Blöcken (Arrays?).
-	Stage wechselt nach oben hin (Level ist sozusagen ein Turm)
-	*/
-	
+	// Displaying every block of the level
+	void draw()
+	{
+		for (int i = 0; i < blocks.size(); i++)
+		{
+			blocks.at(i).draw();
+		}
+	}
 };
 
 class Player
@@ -74,15 +73,16 @@ class Player
 public:
 	int player_x = 0, player_y = 0;
 
+	// Gravity and jumping/falling variable
 	double g = 4;
 	double dy = 0;
 
 
 	// Images for different movements and orientations
-	Gosu::Image r = Gosu::Image::Image("Right.png");
-	Gosu::Image rjump = Gosu::Image::Image("Rightjmp.png");
-	Gosu::Image l = Gosu::Image::Image("Left.png");
-	Gosu::Image ljump = Gosu::Image::Image("Leftjmp.png");
+	Gosu::Image image_r = Gosu::Image::Image("Right.png");
+	Gosu::Image image_rjump = Gosu::Image::Image("Rightjmp.png");
+	Gosu::Image image_l = Gosu::Image::Image("Left.png");
+	Gosu::Image image_ljump = Gosu::Image::Image("Leftjmp.png");
 
 	// Current image
 	Gosu::Image image;
@@ -95,56 +95,28 @@ public:
 		facing = 0;
 		player_x = px;
 		player_y = py;
-		image = r;
+		image = image_r;
 	}
 
+	// Movement
 	void right()
 	{
 		facing = 0;
-		image = r;
 		player_x += 2;
 	}
 
 	void left()
 	{
 		facing = 1;
-		image = l;
 		player_x -= 2;
 	}
 
 	void jump()
 	{
-		if (facing)
-		{
-			image = ljump;
-		}
-		else
-		{
-			image = rjump;
-		}
-
 		dy = -12;
 	}
 
-	void up()
-	{
-		if (facing)
-		{
-			image = ljump;
-		}
-		else
-		{
-			image = rjump;
-		}
-
-		player_y -= 2;
-	}
-
-	void down()
-	{
-		player_y += 2;
-	}
-
+	// Displaying the player
 	void draw()
 	{
 		image.draw(
@@ -153,35 +125,77 @@ public:
 		);
 	}
 
-	// Wahrscheinlich mit Level statt Block
-	char collision_rl(Level l)
+	char collision_rl(Level plevel)
 	{
-		for (int i = 0; i < sizeof(l.blocks) / sizeof(Block); i++)
+		// Check every block of the current level
+		for (int i = 0; i < plevel.blocks.size(); i++)
 		{
-			if (player_x >= l.blocks[i].x - image.width() && player_x <= l.blocks[i].x && player_y > l.blocks[i].y - image.height() && player_y < l.blocks[i].y + l.blocks[i].image.height())
+			// Check for collision right
+			if (player_x >= int(plevel.blocks.at(i).x - image.width()) && player_x <= int(plevel.blocks.at(i).x) && player_y > int(plevel.blocks.at(i).y - image.height()) && player_y < int(plevel.blocks.at(i).y + plevel.blocks.at(i).image.height()))
 			{
-				//player_x = l.blocks[i].x - image.width();
 				return 'r';
 			}
 
-			if (player_x <= l.blocks[i].x + l.blocks[i].image.width() && player_x >= l.blocks[i].x && player_y > l.blocks[i].y - image.height() && player_y < l.blocks[i].y + l.blocks[i].image.height())
+			// Check for collision left
+			if (player_x <= int(plevel.blocks.at(i).x + plevel.blocks.at(i).image.width()) && player_x >= int(plevel.blocks.at(i).x) && player_y > int(plevel.blocks.at(i).y - image.height()) && player_y < int(plevel.blocks.at(i).y + plevel.blocks.at(i).image.height()))
 			{
-				//player_x = l.blocks[i].x + l.blocks[i].image.width();
 				return 'l';
 			}
 		}
 
-		
+
 	}
 
-	char collision_ud(Level l)
+	char collision_ud(Level plevel)
 	{
-		for (int i = 0; i < sizeof(l.blocks) / sizeof(Block); i++)
+		// Check every block of the current level
+		for (int i = 0; i < plevel.blocks.size(); i++)
 		{
-			if (player_y >= l.blocks[i].y - image.height() && player_y <= l.blocks[i].y && player_x > l.blocks[i].x - image.width() && player_x < l.blocks[i].x + l.blocks[i].image.width())
+			// Check for collision down
+			if ((player_y >= int(plevel.blocks.at(i).y - image.height()) && player_y <= int(plevel.blocks.at(i).y) && player_x > int(plevel.blocks.at(i).x - image.width()) && player_x < int(plevel.blocks.at(i).x + plevel.blocks.at(i).image.width())) || player_y >= 288)
 			{
-				player_y = l.blocks[i].y - image.height();
+				if (player_y >= 288)
+				{
+					player_y = 288;
+				}
+				else
+				{
+					player_y = plevel.blocks.at(i).y - image.height();
+				}
+
+				// Set ground image
+				if (facing)
+				{
+					image = image_l;
+				}
+				else
+				{
+					image = image_r;
+				}
+
 				return 'd';
+			}
+			// Set jumping image
+			else
+			{
+				if (facing)
+				{
+					image = image_ljump;
+				}
+				else
+				{
+					image = image_rjump;
+				}
+			}
+
+			// Check for collision up
+			if ((player_y < int(plevel.blocks.at(i).y + plevel.blocks.at(i).image.height()) && player_y >= int(plevel.blocks.at(i).y) && player_x > int(plevel.blocks.at(i).x - image.width()) && player_x < int(plevel.blocks.at(i).x + plevel.blocks.at(i).image.width())) && dy != -g)
+			{
+				player_y = int(plevel.blocks.at(i).y + plevel.blocks.at(i).image.height());
+
+				dy = -g + 0.5;
+
+				return 'u';
 			}
 		}
 	}
@@ -190,20 +204,55 @@ public:
 class GameWindow : public Gosu::Window
 {
 public:
-	Player p1 = Player(240, 150);
+	// Initaialize player at x = 0, y = 288 (bottom left)
+	Player player_1 = Player(0, 288);
 
-	bool pos[100] = {0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,0,0,0,0,
-				   	 0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,0,0,0,0,
-					 0,0,0,0,0,0,0,0,0,0,
-					 1,1,1,1,1,1,1,1,1,1};
 
-	Level l1 = Level(0, pos);
+	/* Test Level
+					  { 0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0 };
+	*/
+
+	// Levelcreation. Array of 100 meaning a 10x10 grid in which you can place blocks
+
+	bool pos_1[100] = { 0,0,0,1,1,0,0,0,0,0,
+						0,0,0,0,0,1,0,0,0,0,
+						0,0,0,0,0,0,0,0,1,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,1,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,1,0,0,
+						0,0,0,0,1,0,0,1,0,0,
+						0,1,0,0,1,1,1,1,1,1,
+						0,1,0,0,1,1,1,1,1,1 };
+
+	Level level_1 = Level(0, pos_1);
+
+	bool pos_2[100] = { 0,0,0,0,1,0,0,0,0,0,
+						1,1,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,1,0,0,0,0,0,0,0,
+						0,0,0,0,0,1,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,1,0,0,0,0,0,
+						0,0,1,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,
+						0,1,0,0,0,0,0,0,0,0 };
+
+	Level level_2 = Level(0, pos_2);
+
+	// Stages contains the different levels
+	Level stages[2] = { level_1 , level_2 };
+	int stage = 0;
+	const int num_of_stages = 2;
 
 	GameWindow()
 		: Window(320, 320)
@@ -218,54 +267,81 @@ public:
 	{
 		// Hintergrund
 		graphics().draw_rect(
-			0, 0, 
+			0, 0,
 			width(), height(),
 			Gosu::Color::Color(0xFF87CEFA),
 			0
 		);
 
-		p1.draw();
-		l1.draw();
+		player_1.draw();
+		stages[stage].draw();
+
+		/*for (int i = 0; i < l1.blocks.size(); i++)
+		{
+			cout << l1.blocks.at(i).x << " ";
+			cout << l1.blocks.at(i).y << endl;
+		}
+
+		cout << endl;
+
+		if (4 > -10)
+		{
+			cout << "lost";
+		}*/
 	}
 
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
-		if (Gosu::Input::down(Gosu::Button::KB_RIGHT) && p1.collision_rl(l1) != 'r')
+		// Inputs
+		if (Gosu::Input::down(Gosu::Button::KB_RIGHT) && player_1.collision_rl(stages[stage]) != 'r')
 		{
-			p1.right();
+			player_1.right();
 		}
 
-		if (Gosu::Input::down(Gosu::Button::KB_LEFT) && p1.collision_rl(l1) != 'l')
+		if (Gosu::Input::down(Gosu::Button::KB_LEFT) && player_1.collision_rl(stages[stage]) != 'l')
 		{
-			p1.left();
+			player_1.left();
 		}
 
-		if (Gosu::Input::down(Gosu::Button::KB_SPACE) && p1.collision_ud(l1) == 'd')
+		if (Gosu::Input::down(Gosu::Button::KB_SPACE) && player_1.collision_ud(stages[stage]) == 'd')
 		{
-			p1.jump();
-			p1.player_y += p1.g + p1.dy;
+			player_1.jump();
+			player_1.player_y += player_1.g + player_1.dy;
 		}
 
-		if (p1.dy < 0)
+		// Gravity
+		if (player_1.dy < 0)
 		{
-			p1.dy += 0.5;
-		}
-		
-		if (p1.collision_ud(l1) != 'd')
-		{
-			p1.player_y += p1.g + p1.dy;
-		}
-		
-		if (Gosu::Input::down(Gosu::Button::KB_UP) && p1.collision_ud(l1) != 'u')
-		{
-			p1.up();
+			player_1.dy += 0.5;
 		}
 
-		if (Gosu::Input::down(Gosu::Button::KB_DOWN) && p1.collision_ud(l1) != 'd')
+		if (player_1.collision_ud(stages[stage]) != 'd')
 		{
-			p1.down();
+			player_1.player_y += player_1.g + player_1.dy;
 		}
+
+		// Set Stage
+		if (player_1.player_y <= -int(player_1.image.height()) && player_1.collision_ud(stages[stage]) == 'd' && stage < num_of_stages - 1)
+		{
+			player_1.player_x = 0;
+			player_1.player_y = 288;
+
+			stage++;
+		}
+
+		/*
+		if (Gosu::Input::down(Gosu::Button::KB_UP) && player_.collision_ud(level_1) != 'u')
+		{
+			player_1.up();
+		}
+
+		if (Gosu::Input::down(Gosu::Button::KB_DOWN) && player_1.collision_ud(level_1) != 'd')
+		{
+			player_1.down();
+		}*/
+
+		//cout << player_1.collision_ud(l1);
 	}
 };
 
