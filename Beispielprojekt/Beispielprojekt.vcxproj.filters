@@ -35,13 +35,16 @@
     <Image Include="Block.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="grasblock.png">
+    <Image Include="Grasblock.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Leftjmp.png">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Rightjmp.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Dirt.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -10,7 +10,10 @@ class Block
 public:
 	int x = 0, y = 0;
 
-	Gosu::Image image = Gosu::Image::Image("grasblock.png");
+	Gosu::Image dirt = Gosu::Image::Image("Dirt.png");
+	Gosu::Image gras = Gosu::Image::Image("Grasblock.png");
+
+	Gosu::Image image = gras;
 
 	Block()
 	{
@@ -53,6 +56,11 @@ public:
 
 				blocks.back().x = i * 32 % 320;
 				blocks.back().y = floor(i / 10) * 32;
+
+				if (bpos[i - 10] && i >= 10)
+				{
+					blocks.back().image = blocks.back().dirt;
+				}
 			}
 		}
 

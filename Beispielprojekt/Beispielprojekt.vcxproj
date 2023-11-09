@@ -171,7 +171,8 @@
     <ClCompile Include="Beispielprojekt.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="grasblock.png" />
+    <Image Include="Dirt.png" />
+    <Image Include="Grasblock.png" />
     <Image Include="Image.png" />
     <Image Include="Block.png" />
     <Image Include="Leftjmp.png" />
