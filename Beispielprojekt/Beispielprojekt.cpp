@@ -5,6 +5,11 @@
 
 using namespace std;
 
+const int grid_width = 32;
+const int grid_size = 20;
+const int window_size = grid_width * grid_size;
+const int grid_square = grid_size * grid_size;
+
 class Block
 {
 public:
@@ -39,12 +44,12 @@ public:
 class Level
 {
 public:
-	bool bpos[100];
+	bool bpos[grid_square];
 
 	vector<Block> blocks;
 
-	Level(int pstage, bool pos[100])
-	{	
+	Level(bool pos[grid_square])
+	{
 		// Creating the vector "blocks" depending on the 10x10 array
 		for (int i = 0; i < sizeof(bpos) / sizeof(bool); i++)
 		{
@@ -54,10 +59,33 @@ public:
 			{
 				blocks.push_back(Block());
 
-				blocks.back().x = i * 32 % 320;
-				blocks.back().y = floor(i / 10) * 32;
+				blocks.back().x = i * grid_width % window_size;
+				blocks.back().y = floor(i / grid_size) * grid_width;
 
-				if (bpos[i - 10] && i >= 10)
+				if (i >= 10 && bpos[i - grid_size])
+				{
+					blocks.back().image = blocks.back().dirt;
+				}
+			}
+		}
+
+	}
+
+	Level(string pos)
+	{
+		// Creating the vector "blocks" depending on the 10x10 array
+		for (int i = 0; i < sizeof(bpos) / sizeof(bool); i++)
+		{
+			bpos[i] = bool(pos[i] - 48);
+
+			if (bpos[i])
+			{
+				blocks.push_back(Block());
+
+				blocks.back().x = i * grid_width % window_size;
+				blocks.back().y = floor(i / grid_size) * grid_width;
+
+				if (i >= 10 && bpos[i - grid_size])
 				{
 					blocks.back().image = blocks.back().dirt;
 				}
@@ -160,11 +188,11 @@ public:
 		for (int i = 0; i < plevel.blocks.size(); i++)
 		{
 			// Check for collision down
-			if ((player_y >= int(plevel.blocks.at(i).y - image.height()) && player_y <= int(plevel.blocks.at(i).y) && player_x > int(plevel.blocks.at(i).x - image.width()) && player_x < int(plevel.blocks.at(i).x + plevel.blocks.at(i).image.width())) || player_y >= 288)
+			if ((player_y >= int(plevel.blocks.at(i).y - image.height()) && player_y <= int(plevel.blocks.at(i).y) && player_x > int(plevel.blocks.at(i).x - image.width()) && player_x < int(plevel.blocks.at(i).x + plevel.blocks.at(i).image.width())) || player_y >= window_size - grid_width)
 			{
-				if (player_y >= 288)
+				if (player_y >= window_size - grid_width)
 				{
-					player_y = 288;
+					player_y = window_size - grid_width;
 				}
 				else
 				{
@@ -213,10 +241,10 @@ class GameWindow : public Gosu::Window
 {
 public:
 	// Initaialize player at x = 0, y = 288 (bottom left)
-	Player player_1 = Player(0, 288);
+	Player player_1 = Player(0, window_size - grid_width);
 
 
-	/* Test Level
+	/* Test Level 10x10
 					  { 0,0,0,0,0,0,0,0,0,0,
 						0,0,0,0,0,0,0,0,0,0,
 						0,0,0,0,0,0,0,0,0,0,
@@ -227,11 +255,71 @@ public:
 						0,0,0,0,0,0,0,0,0,0,
 						0,0,0,0,0,0,0,0,0,0,
 						0,0,0,0,0,0,0,0,0,0 };
+
+	Test Level 20x20
+					  { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+						0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+
+
+	Test Level 10x10 String
+	"0000000000"
+	"0000000000"
+	"0000000000"
+	"0000000000"
+	"0000000000"
+	"0000000000"
+	"0000000000"
+	"0000000000"
+	"0000000000"
+	"0000000000"
+
+	Test Level 20x20 String
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+	"00000000000000000000"
+
 	*/
 
 	// Levelcreation. Array of 100 meaning a 10x10 grid in which you can place blocks
 
-	bool pos_1[100] = { 0,0,0,1,1,0,0,0,0,0,
+	// 10x10 Levels
+	/*
+	bool pos_1[100] = {0,0,0,1,1,0,0,0,0,0,
 						0,0,0,0,0,1,0,0,0,0,
 						0,0,0,0,0,0,0,0,1,0,
 						0,0,0,0,0,0,0,0,0,0,
@@ -242,7 +330,7 @@ public:
 						0,1,0,0,1,1,1,1,1,1,
 						0,1,0,0,1,1,1,1,1,1 };
 
-	Level level_1 = Level(0, pos_1);
+	Level level_1 = Level(pos_1);
 
 	bool pos_2[100] = { 0,0,0,0,1,0,0,0,0,0,
 						1,1,0,0,0,0,0,0,0,0,
@@ -255,18 +343,101 @@ public:
 						0,0,0,0,0,0,0,0,0,0,
 						0,1,0,0,0,0,0,0,0,0 };
 
-	Level level_2 = Level(0, pos_2);
+	Level level_2 = Level(pos_2);
+*/
+// 20x20 Levels
+/*
+bool pos_1[400] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0 };
+
+Level level_1 = Level(pos_1);
+
+bool pos_2[400] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+					0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0 };
+
+
+
+Level level_2 = Level(pos_2);*/
+
+// 10x10 with Strings
+
+
+	string pos_1 =
+		"0000000000"
+		"0010000000"
+		"1000000000"
+		"1000000000"
+		"1110000000"
+		"0000000000"
+		"0000111000"
+		"0000000001"
+		"0000000001"
+		"0000011111";
+
+	Level level_1 = Level(pos_1);
+
+	string pos_2 =
+		"0000000000"
+		"1000000000"
+		"0100000000"
+		"0011001000"
+		"0000000000"
+		"0000000100"
+		"0000000000"
+		"0000100001"
+		"0000100001"
+		"0001111111";
+
+	Level level_2 = Level(pos_2);
 
 	// Stages contains the different levels
-	Level stages[2] = { level_1 , level_2 };
+	Level stages[1] = { level_1 };
 	int stage = 0;
-	const int num_of_stages = 2;
+	const int num_of_stages = 1;
 
 	GameWindow()
-		: Window(320, 320)
+		: Window(window_size, window_size)
 	{
-		set_caption("Gosu Tutorial mit Git");
+		set_caption("Cooles Spiel");
 	}
+
+	Gosu::Font font = Gosu::Font::Font(window_size / grid_size * 2, "Georgia");
 
 	// Wird bis zu 60x pro Sekunde aufgerufen.
 	// Wenn die Grafikkarte oder der Prozessor nicht mehr hinterherkommen,
@@ -284,30 +455,23 @@ public:
 		player_1.draw();
 		stages[stage].draw();
 
-		/*for (int i = 0; i < l1.blocks.size(); i++)
+		if (player_1.player_y <= 0 && player_1.collision_ud(stages[stage]) == 'd' && stage >= num_of_stages - 1)
 		{
-			cout << l1.blocks.at(i).x << " ";
-			cout << l1.blocks.at(i).y << endl;
+			font.draw_text_rel("Victory", window_size / 2, grid_width * grid_size / 4, 10, 0.5, 0.5, 1, 1, Gosu::Color::Color(0xFFF5D525));
 		}
-
-		cout << endl;
-
-		if (4 > -10)
-		{
-			cout << "lost";
-		}*/
+		
 	}
 
 	// Wird 60x pro Sekunde aufgerufen
 	void update() override
 	{
 		// Inputs
-		if (Gosu::Input::down(Gosu::Button::KB_RIGHT) && player_1.collision_rl(stages[stage]) != 'r')
+		if ((Gosu::Input::down(Gosu::Button::KB_RIGHT) || Gosu::Input::down(Gosu::Button::KB_D)) && player_1.collision_rl(stages[stage]) != 'r')
 		{
 			player_1.right();
 		}
 
-		if (Gosu::Input::down(Gosu::Button::KB_LEFT) && player_1.collision_rl(stages[stage]) != 'l')
+		if ((Gosu::Input::down(Gosu::Button::KB_LEFT) || Gosu::Input::down(Gosu::Button::KB_A)) && player_1.collision_rl(stages[stage]) != 'l')
 		{
 			player_1.left();
 		}
@@ -329,25 +493,15 @@ public:
 			player_1.player_y += player_1.g + player_1.dy;
 		}
 
-		// Set Stage
-		if (player_1.player_y <= -int(player_1.image.height()) && player_1.collision_ud(stages[stage]) == 'd' && stage < num_of_stages - 1)
+		// Set Stage -int(player_1.image.height())
+		if (player_1.player_y <= 0 && player_1.collision_ud(stages[stage]) == 'd' && stage < num_of_stages - 1)
 		{
+
 			player_1.player_x = 0;
-			player_1.player_y = 288;
+			player_1.player_y = window_size - grid_width;
 
 			stage++;
 		}
-
-		/*
-		if (Gosu::Input::down(Gosu::Button::KB_UP) && player_.collision_ud(level_1) != 'u')
-		{
-			player_1.up();
-		}
-
-		if (Gosu::Input::down(Gosu::Button::KB_DOWN) && player_1.collision_ud(level_1) != 'd')
-		{
-			player_1.down();
-		}*/
 
 		//cout << player_1.collision_ud(l1);
 	}
