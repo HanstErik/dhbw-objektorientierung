@@ -445,10 +445,10 @@ public:
 			"0000100001"
 			"0001111111";
 
-		Level level_2 = Level(pos_2);
-		*/
-		// Stages contains the different levels
-	Level stages[2] = { level_1, level_2 };
+	Level level_2 = Level(pos_2);
+	*/
+	// Stages contains the different levels
+	Level stages[1] = { level_1 };
 	int stage = 0;
 	const int num_of_stages = 2;
 
