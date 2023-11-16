@@ -428,9 +428,9 @@ Level level_2 = Level(pos_2);
 	Level level_2 = Level(pos_2);
 	*/
 	// Stages contains the different levels
-	Level stages[1] = { level_1 };
+	Level stages[2] = { level_1,level_2};
 	int stage = 0;
-	const int num_of_stages = 1;
+	const int num_of_stages = 2;
 
 	GameWindow()
 		: Window(window_size, window_size)
