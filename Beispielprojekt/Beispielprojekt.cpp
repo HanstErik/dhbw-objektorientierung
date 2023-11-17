@@ -168,7 +168,7 @@ public:
 		for (int i = 0; i < plevel.blocks.size(); i++)
 		{
 			// Check for collision right
-			if (player_x >= int(plevel.blocks.at(i).x - image.width()) && player_x <= int(plevel.blocks.at(i).x) && player_y > int(plevel.blocks.at(i).y - image.height()) && player_y < int(plevel.blocks.at(i).y + plevel.blocks.at(i).image.height()))
+			if (player_x >= int(plevel.blocks.at(i).x - image.width()) && player_x <= int(plevel.blocks.at(i).x + (plevel.blocks.at(i).image.width() - image.width())) && player_y > int(plevel.blocks.at(i).y - image.height()) && player_y < int(plevel.blocks.at(i).y + plevel.blocks.at(i).image.height()))
 			{
 				return 'r';
 			}
